@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,9 +13,110 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 // import { useTheme } from "@/context/ThemeContext";
+import { validateField } from "@/lib/utils";
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
+import { EyeIcon, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
     // const { toggleTheme } = useTheme();
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+    });
+
+    const { handleLogin } = useAuth();
+    const toast = useToast();
+
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Handle input change
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+
+        setFormData((prev) => ({ ...prev, [name]: value }));
+
+        // Clear error for this field when user starts typing
+        if (errors[name]) {
+            setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors[name];
+                return newErrors;
+            });
+        }
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const error = validateField(name, value, formData);
+
+        if (error) {
+            setErrors((prev) => ({ ...prev, [name]: error }));
+        }
+    };
+
+    // Validate entire form
+    const validateForm = (): boolean => {
+        const newErrors: Record<string, string> = {};
+
+        Object.keys(formData).forEach((key) => {
+            const error = validateField(
+                key,
+                formData[key as keyof typeof formData],
+                formData
+            );
+            if (error) newErrors[key] = error;
+        });
+
+        setErrors(newErrors);
+
+        // Show toast for validation errors
+        if (Object.keys(newErrors).length > 0) {
+            toast.error("Please fix the errors in the form");
+        }
+
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Handle form submission
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            await handleLogin({
+                email: formData.email.trim(),
+                password: formData.password,
+            });
+
+            toast.success("Log in successful");
+
+            navigate("/dashboard", { replace: true });
+
+            // Reset form on success
+            setFormData({
+                email: "",
+                password: "",
+            });
+        } catch (error: any) {
+            console.log(error);
+            toast.error(error.message || "Failed to Log in");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="flex w-screen  min-h-screen items-center justify-center bg-background p-4 relative overflow-hidden">
             {/* Background Decorative Element */}
@@ -34,13 +136,26 @@ export default function LoginPage() {
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
+
                         <Input
                             id="email"
+                            name="email"
                             type="email"
                             placeholder="name@example.com"
-                            className="bg-white/5 border-white/10 focus:border-primary transition-colors"
-                            required
+                            className="bg-white/5 border-white/10"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            onBlur={handleBlur}
+                            disabled={isSubmitting}
                         />
+
+                        {/* <p>{formData.email}</p> */}
+
+                        {errors.email && (
+                            <p className="text-xs text-red-500">
+                                {errors.email}
+                            </p>
+                        )}
                     </div>
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
@@ -52,12 +167,35 @@ export default function LoginPage() {
                                 Forgot password?
                             </Link>
                         </div>
-                        <Input
-                            id="password"
-                            type="password"
-                            className="bg-white/5 border-white/10 focus:border-primary transition-colors"
-                            required
-                        />
+                        <div className="relative">
+                            <Input
+                                id="password"
+                                name="password"
+                                type={showPassword ? "text" : "password"}
+                                className="bg-white/5 border-white/10 pr-10"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                disabled={isSubmitting}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <EyeIcon className="h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
+
+                        {errors.password && (
+                            <p className="text-xs text-red-500">
+                                {errors.password}
+                            </p>
+                        )}
                     </div>
                     <div className="flex items-center space-x-2">
                         <Checkbox
@@ -73,11 +211,13 @@ export default function LoginPage() {
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">
-                    <Link to="/dashboard" className="w-full">
-                        <Button className="w-full hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
-                            Sign In
-                        </Button>
-                    </Link>
+                    <Button
+                        onClick={handleSubmit}
+                        className="w-full hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+                    >
+                        Sign In
+                    </Button>
+
                     <div className="text-center text-sm">
                         {"Don't have an account? "}
                         <Link
@@ -89,8 +229,8 @@ export default function LoginPage() {
                     </div>
                 </CardFooter>
             </Card>
-            {/*
-            <Button onClick={() => toggleTheme()}>toggle Theme</Button> */}
+
+            {/* <Button onClick={() => toggleTheme()}>toggle Theme</Button> */}
         </div>
     );
 }

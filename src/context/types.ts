@@ -15,4 +15,5 @@ export interface AuthContextType {
     handleLogin: (params: SignupParams) => SignupResponse;
     handleSignup: (params: SignupParams) => SignupResponse;
     handleLogout: () => Promise<void>;
+    loading: boolean;
 }

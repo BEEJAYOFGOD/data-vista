@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { AuthContext } from "./AuthContext";
 import type { AuthContextType, SignupParams, SignupResponse } from "./types";
+import { LoadingOverlay } from "@/components/ui/LoadingSpinner";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<AuthContextType["user"]>(null);
@@ -57,11 +58,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         handleLogin,
         handleSignup,
         handleLogout,
+        loading,
     };
 
     return (
         <AuthContext.Provider value={value}>
-            {loading ? <p>loading</p> : children}
+            {loading ? (
+                <LoadingOverlay text="Loading your data..." />
+            ) : (
+                children
+            )}
         </AuthContext.Provider>
     );
 };

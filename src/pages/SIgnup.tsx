@@ -143,6 +143,7 @@ export default function SignupPage() {
 
             setTermsAccepted(false);
             setPasswordStrength({ strength: "weak", score: 0 });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.log(error);
             toast.error(error.message || "Failed to create account");
@@ -195,6 +196,7 @@ export default function SignupPage() {
                                 onBlur={handleBlur}
                                 disabled={isSubmitting}
                             />
+
                             {errors.email && (
                                 <p className="text-xs text-red-500">
                                     {errors.email}
@@ -262,6 +264,7 @@ export default function SignupPage() {
                             <Label htmlFor="confirmPassword">
                                 Confirm Password
                             </Label>
+
                             <div className="relative">
                                 <Input
                                     id="confirmPassword"
@@ -293,6 +296,7 @@ export default function SignupPage() {
                                     )}
                                 </button>
                             </div>
+
                             {errors.confirmPassword && (
                                 <p className="text-xs text-red-500">
                                     {errors.confirmPassword}

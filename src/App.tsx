@@ -4,6 +4,8 @@ import LoginPage from "./pages/Login";
 import SignupPage from "./pages/SIgnup";
 import { Toaster } from "sonner";
 import { useTheme } from "./context/ThemeContext";
+import DashboardLayout from "./layout/DashboardLayout";
+import ProtectedRoute from "./components/dashboard/ProtectedRoute";
 
 function App() {
     const { theme } = useTheme();
@@ -21,6 +23,15 @@ function App() {
             <Routes>
                 <Route path="/" element={<LoginPage />}></Route>
                 <Route path="/signup" element={<SignupPage />}></Route>
+
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <DashboardLayout />
+                        </ProtectedRoute>
+                    }
+                ></Route>
             </Routes>
         </>
     );
