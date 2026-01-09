@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { useTheme } from "./context/ThemeContext";
 import DashboardLayout from "./layout/DashboardLayout";
 import ProtectedRoute from "./components/dashboard/ProtectedRoute";
+import DashboardHome from "./pages/Dashboard/Overview";
 
 function App() {
     const { theme } = useTheme();
@@ -21,8 +22,8 @@ function App() {
                 theme={theme!}
             />
             <Routes>
-                <Route path="/" element={<LoginPage />}></Route>
-                <Route path="/signup" element={<SignupPage />}></Route>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
 
                 <Route
                     path="/dashboard"
@@ -31,7 +32,10 @@ function App() {
                             <DashboardLayout />
                         </ProtectedRoute>
                     }
-                ></Route>
+                >
+                    <Route index element={<DashboardHome />} />
+                    {/* <Route path="/signup" element={<SignupPage />}></Route> */}
+                </Route>
             </Routes>
         </>
     );
