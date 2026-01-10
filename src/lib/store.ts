@@ -41,6 +41,7 @@ export const useAppStore = create<AppState>()(
             removeDataset: (id) =>
                 set((state) => ({
                     datasets: state.datasets.filter((d) => d.id !== id),
+
                     currentDatasetId:
                         state.currentDatasetId === id
                             ? null
@@ -57,6 +58,7 @@ export const useAppStore = create<AppState>()(
             setSidebarCollapsed: (collapsed) =>
                 set({ sidebarCollapsed: collapsed }),
         }),
+
         {
             name: "datavista-storage",
             partialize: (state) => ({

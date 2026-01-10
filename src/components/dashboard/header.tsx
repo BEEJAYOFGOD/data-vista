@@ -28,6 +28,7 @@ export function Header() {
 
         window.addEventListener("online", updateOnlineStatus);
         window.addEventListener("offline", updateOnlineStatus);
+
         updateOnlineStatus();
 
         return () => {
@@ -50,7 +51,7 @@ export function Header() {
                     className={cn(
                         "flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium",
                         isOnline
-                            ? "bg-success/10 text-success"
+                            ? "bg-green-500/80 text-success"
                             : "bg-warning/10 text-warning"
                     )}
                 >
@@ -92,7 +93,7 @@ export function Header() {
                                     alt="User"
                                 />
                                 <AvatarFallback className="bg-primary text-primary-foreground">
-                                    {user?.email[0].toLocaleUpperCase()}
+                                    {user?.email?.[0]?.toLocaleUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                         </Button>

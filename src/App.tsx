@@ -7,6 +7,8 @@ import { useTheme } from "./context/ThemeContext";
 import DashboardLayout from "./layout/DashboardLayout";
 import ProtectedRoute from "./components/dashboard/ProtectedRoute";
 import DashboardHome from "./pages/Dashboard/Overview";
+import UploadPage from "./pages/Dashboard/Upload";
+import VisualizationsPage from "./pages/Dashboard/Visualizations";
 
 function App() {
     const { theme } = useTheme();
@@ -34,6 +36,11 @@ function App() {
                     }
                 >
                     <Route index element={<DashboardHome />} />
+                    <Route path="upload" element={<UploadPage />} />
+                    <Route
+                        path="visualizations"
+                        element={<VisualizationsPage />}
+                    />
                     {/* <Route path="/signup" element={<SignupPage />}></Route> */}
                 </Route>
             </Routes>

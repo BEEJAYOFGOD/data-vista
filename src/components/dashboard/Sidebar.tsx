@@ -55,11 +55,9 @@ export function Sidebar() {
             <ScrollArea className="flex-1 py-4">
                 <nav className="flex flex-col gap-1 px-2">
                     {navigation.map((item) => {
-                        const isActive =
-                            pathname === item.href ||
-                            (item.href !== "/dashboard" &&
-                                pathname.startsWith("/dashboard"));
-                        // const isActive = true;
+                        const isActive = pathname === item.href;
+
+                        console.log("route is active", isActive);
 
                         return (
                             <Link key={item.name} to={item.href}>
