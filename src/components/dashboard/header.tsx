@@ -19,7 +19,7 @@ export function Header() {
     const { toggleTheme } = useTheme();
     const { isOnline, setOnlineStatus } = useAppStore();
 
-    const { user } = useAuth();
+    const { user, handleLogout } = useAuth();
 
     useEffect(() => {
         const updateOnlineStatus = () => {
@@ -52,7 +52,7 @@ export function Header() {
                         "flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium",
                         isOnline
                             ? "bg-green-500/80 text-success"
-                            : "bg-warning/10 text-warning"
+                            : "bg-warning/10 text-warning",
                     )}
                 >
                     {isOnline ? (
@@ -119,7 +119,10 @@ export function Header() {
                             <span>Profile</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive">
+                        <DropdownMenuItem
+                            onClick={handleLogout}
+                            className="text-destructive focus:text-destructive"
+                        >
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Log out</span>
                         </DropdownMenuItem>

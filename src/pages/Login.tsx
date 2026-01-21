@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-// import { useTheme } from "@/context/ThemeContext";
 import { validateField } from "@/lib/utils";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,7 +20,6 @@ import { EyeIcon, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-    // const { toggleTheme } = useTheme();
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -33,6 +31,7 @@ export default function LoginPage() {
     const toast = useToast();
 
     const [errors, setErrors] = useState<Record<string, string>>({});
+
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -69,7 +68,7 @@ export default function LoginPage() {
             const error = validateField(
                 key,
                 formData[key as keyof typeof formData],
-                formData
+                formData,
             );
             if (error) newErrors[key] = error;
         });
@@ -87,6 +86,12 @@ export default function LoginPage() {
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Add validation check BEFORE attempting login
+        if (!formData.email.trim() || !formData.password) {
+            toast.error("Please enter both email and password");
+            return;
+        }
 
         if (!validateForm()) {
             return;
@@ -118,7 +123,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex w-screen  min-h-screen items-center justify-center bg-background p-4 relative overflow-hidden">
+        <div className="flex w-screen min-h-screen items-center justify-center bg-background p-4 relative overflow-hidden">
             {/* Background Decorative Element */}
             <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
@@ -133,104 +138,115 @@ export default function LoginPage() {
                         dashboard
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
 
-                        <Input
-                            id="email"
-                            name="email"
-                            type="email"
-                            placeholder="name@example.com"
-                            className="bg-white/5 border-white/10"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            onBlur={handleBlur}
-                            disabled={isSubmitting}
-                        />
+                {/* FIXED: Wrapped in form element */}
+                <form onSubmit={handleSubmit}>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
 
-                        {/* <p>{formData.email}</p> */}
-
-                        {errors.email && (
-                            <p className="text-xs text-red-500">
-                                {errors.email}
-                            </p>
-                        )}
-                    </div>
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="password">Password</Label>
-                            <Link
-                                to="/forgot-password"
-                                className="text-xs text-primary hover:underline transition-all"
-                            >
-                                Forgot password?
-                            </Link>
-                        </div>
-                        <div className="relative">
                             <Input
-                                id="password"
-                                name="password"
-                                type={showPassword ? "text" : "password"}
-                                className="bg-white/5 border-white/10 pr-10"
-                                value={formData.password}
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="name@example.com"
+                                className="bg-white/5 border-white/10"
+                                value={formData.email}
                                 onChange={handleInputChange}
                                 onBlur={handleBlur}
                                 disabled={isSubmitting}
+                                required
+                                autoComplete="email"
                             />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                {showPassword ? (
-                                    <EyeOff className="h-4 w-4" />
-                                ) : (
-                                    <EyeIcon className="h-4 w-4" />
-                                )}
-                            </button>
+
+                            {errors.email && (
+                                <p className="text-xs text-red-500">
+                                    {errors.email}
+                                </p>
+                            )}
                         </div>
 
-                        {errors.password && (
-                            <p className="text-xs text-red-500">
-                                {errors.password}
-                            </p>
-                        )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox
-                            id="remember"
-                            className="border-white/20 data-[state=checked]:bg-red-500"
-                        />
-                        <label
-                            htmlFor="remember"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
-                            Remember me
-                        </label>
-                    </div>
-                </CardContent>
-                <CardFooter className="flex flex-col space-y-4">
-                    <Button
-                        onClick={handleSubmit}
-                        className="w-full hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
-                    >
-                        Sign In
-                    </Button>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="password">Password</Label>
+                                <Link
+                                    to="/forgot-password"
+                                    className="text-xs text-primary hover:underline transition-all"
+                                    tabIndex={-1}
+                                >
+                                    Forgot password?
+                                </Link>
+                            </div>
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    className="bg-white/5 border-white/10 pr-10"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    onBlur={handleBlur}
+                                    disabled={isSubmitting}
+                                    required
+                                    autoComplete="current-password"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    disabled={isSubmitting}
+                                    tabIndex={-1}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-4 w-4" />
+                                    ) : (
+                                        <EyeIcon className="h-4 w-4" />
+                                    )}
+                                </button>
+                            </div>
 
-                    <div className="text-center text-sm">
-                        {"Don't have an account? "}
-                        <Link
-                            to="/signup"
-                            className="text-primary hover:underline transition-all"
+                            {errors.password && (
+                                <p className="text-xs text-red-500">
+                                    {errors.password}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="remember"
+                                className="border-white/20 data-[state=checked]:bg-red-500"
+                            />
+                            <label
+                                htmlFor="remember"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                                Remember me
+                            </label>
+                        </div>
+                    </CardContent>
+
+                    <CardFooter className="flex flex-col space-y-4">
+                        <Button
+                            type="submit"
+                            className="w-full hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+                            disabled={isSubmitting}
                         >
-                            Sign up
-                        </Link>
-                    </div>
-                </CardFooter>
+                            {isSubmitting ? "Signing in..." : "Sign In"}
+                        </Button>
+
+                        <div className="text-center text-sm">
+                            {"Don't have an account? "}
+                            <Link
+                                to="/signup"
+                                className="text-primary hover:underline transition-all"
+                            >
+                                Sign up
+                            </Link>
+                        </div>
+                    </CardFooter>
+                </form>
             </Card>
-
-            {/* <Button onClick={() => toggleTheme()}>toggle Theme</Button> */}
         </div>
     );
 }

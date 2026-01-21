@@ -1,18 +1,39 @@
 import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
+const cardVariants = cva(
+    "text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm",
+    {
+        variants: {
+            variant: {
+                default: "bg-card",
+                glass: "bg-white/10 dark:bg-black/20 backdrop-blur-md border-white/20 dark:border-white/10",
+                "glass-light":
+                    "bg-white/20 dark:bg-black/30 backdrop-blur-lg border-white/30 dark:border-white/15",
+                "glass-dark":
+                    "bg-black/40 dark:bg-black/50 backdrop-blur-xl border-white/15 dark:border-white/10",
+                "glass-gradient":
+                    "bg-gradient-to-br from-white/20 to-white/5 dark:from-black/30 dark:to-black/10 backdrop-blur-md border-white/20",
+            },
+        },
+        defaultVariants: {
+            variant: "default",
+        },
+    },
+);
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card"
-      className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
-        className
-      )}
-      {...props}
-    />
-  )
+interface CardProps
+    extends React.ComponentProps<"div">, VariantProps<typeof cardVariants> {}
+
+function Card({ className, variant, ...props }: CardProps) {
+    return (
+        <div
+            data-slot="card"
+            className={cn(cardVariants({ variant }), "py-6", className)}
+            {...props}
+        />
+    );
 }
 
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
@@ -82,11 +103,11 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardAction,
-  CardDescription,
-  CardContent,
-}
+    Card,
+    CardHeader,
+    CardFooter,
+    CardTitle,
+    CardAction,
+    CardDescription,
+    CardContent,
+};

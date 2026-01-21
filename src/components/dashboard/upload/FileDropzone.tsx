@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useAppStore, type Dataset } from "@/lib/store";
+import { useAppStore } from "@/lib/store";
+import type { Dataset } from "@/types/Dataset";
 import { parseFile, formatFileSize } from "@/lib/file-parser";
 import {
     Upload,
@@ -34,20 +35,31 @@ export function FileDropzone() {
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<UploadResult | null>(null);
+    const [abortController, setAbortController] =
+        useState<AbortController | null>(null);
 
-    const handleDragOver = useCallback((e: React.DragEvent) => {
-        e.preventDefault();
-        setState("hover");
-    }, []);
+    const handleDragOver = useCallback(
+        (e: React.DragEvent<HTMLLabelElement>) => {
+            e.preventDefault();
+            setState("hover");
+        },
+        [],
+    );
 
-    const handleDragLeave = useCallback((e: React.DragEvent) => {
-        e.preventDefault();
-        setState("idle");
-    }, []);
+    const handleDragLeave = useCallback(
+        (e: React.DragEvent<HTMLLabelElement>) => {
+            e.preventDefault();
+            setState("idle");
+        },
+        [],
+    );
 
     const processFile = async (file: File) => {
         // Validate file size (50MB max)
+        const controller = new AbortController();
+        setAbortController(controller);
         const maxSize = 50 * 1024 * 1024;
+
         if (file.size > maxSize) {
             setError("File size exceeds 50MB limit");
             setState("error");
@@ -72,9 +84,18 @@ export function FileDropzone() {
             // Simulate progress
             const progressInterval = setInterval(() => {
                 setProgress((prev) => Math.min(prev + 10, 90));
-            }, 100);
+            }, 1000);
 
-            const parsed = await parseFile(file);
+            // Parse file AND ensure at least 800ms passes for visual feedback
+            const [parsed] = await Promise.all([
+                parseFile(file),
+                new Promise((resolve) => setTimeout(resolve, 8000)),
+            ]);
+
+            if (controller.signal.aborted) {
+                clearInterval(progressInterval);
+                return;
+            }
 
             clearInterval(progressInterval);
             setProgress(100);
@@ -97,7 +118,7 @@ export function FileDropzone() {
             setState("success");
         } catch (err) {
             setError(
-                err instanceof Error ? err.message : "Failed to parse file"
+                err instanceof Error ? err.message : "Failed to parse file",
             );
             setState("error");
         }
@@ -155,6 +176,10 @@ export function FileDropzone() {
     };
 
     const handleReset = () => {
+        if (abortController) {
+            abortController.abort();
+            setAbortController(null);
+        }
         setState("idle");
         setProgress(0);
         setError(null);
@@ -309,7 +334,7 @@ export function FileDropzone() {
         <Card
             className={cn(
                 "bg-card transition-all duration-200 cursor-pointer",
-                state === "hover" && "border-primary bg-primary/5 scale-[1.01]"
+                state === "hover" && "border-primary bg-primary/5 scale-[1.01]",
             )}
         >
             <CardContent className="p-0">
@@ -325,13 +350,16 @@ export function FileDropzone() {
                             "flex flex-col items-center justify-center space-y-6 rounded-lg border-2 border-dashed p-12 transition-colors",
                             state === "hover"
                                 ? "border-primary"
-                                : "border-muted-foreground/25"
+                                : "border-muted-foreground/25",
                         )}
+                        title="drop your image here"
                     >
                         <div
                             className={cn(
                                 "flex h-20 w-20 items-center justify-center rounded-full transition-colors",
-                                state === "hover" ? "bg-primary/10" : "bg-muted"
+                                state === "hover"
+                                    ? "bg-primary/10"
+                                    : "bg-muted",
                             )}
                         >
                             <Upload
@@ -339,7 +367,7 @@ export function FileDropzone() {
                                     "h-10 w-10 transition-colors",
                                     state === "hover"
                                         ? "text-primary"
-                                        : "text-muted-foreground"
+                                        : "text-muted-foreground",
                                 )}
                             />
                         </div>

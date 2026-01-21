@@ -34,7 +34,7 @@ export function Sidebar() {
         <aside
             className={cn(
                 "relative flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300",
-                sidebarCollapsed ? "w-16" : "w-64"
+                sidebarCollapsed ? "w-16" : "w-64",
             )}
         >
             {/* Logo */}
@@ -60,23 +60,24 @@ export function Sidebar() {
                         console.log("route is active", isActive);
 
                         return (
-                            <Link key={item.name} to={item.href}>
-                                <Button
-                                    variant={isActive ? "secondary" : "ghost"}
-                                    className={cn(
-                                        "w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                                        isActive &&
-                                            "bg-sidebar-accent text-sidebar-accent-foreground",
-                                        sidebarCollapsed &&
-                                            "justify-center px-2"
-                                    )}
-                                >
+                            <Button
+                                key={item.name}
+                                variant={isActive ? "secondary" : "sidebarItem"}
+                                className={cn(
+                                    "w-full justify-start gap-3 text-sidebar-foreground hover:text-sidebar-accent-foreground",
+                                    isActive &&
+                                        "bg-sidebar-accent hover:bg-sidebar-accent text-sidebar-accent-foreground",
+                                    sidebarCollapsed && "justify-center px-2",
+                                )}
+                                asChild
+                            >
+                                <Link to={item.href}>
                                     <item.icon className="h-4 w-4 shrink-0" />
                                     {!sidebarCollapsed && (
                                         <span>{item.name}</span>
                                     )}
-                                </Button>
-                            </Link>
+                                </Link>
+                            </Button>
                         );
                     })}
                 </nav>
@@ -85,12 +86,12 @@ export function Sidebar() {
             {/* Collapse Button */}
             <div className="border-t border-sidebar-border p-2">
                 <Button
-                    variant="ghost"
+                    variant="sidebarItem"
                     size="sm"
                     onClick={toggleSidebar}
                     className={cn(
-                        "w-full text-sidebar-foreground hover:bg-sidebar-accent",
-                        sidebarCollapsed && "justify-center"
+                        "w-full ",
+                        sidebarCollapsed && "justify-center",
                     )}
                 >
                     {sidebarCollapsed ? (

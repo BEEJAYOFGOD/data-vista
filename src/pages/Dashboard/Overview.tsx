@@ -87,6 +87,7 @@ export default function DashboardHome() {
                         transform, and visualize your data.
                     </p>
                 </div>
+
                 {datasets.length === 0 && (
                     <Button
                         onClick={loadSampleData}
@@ -125,7 +126,7 @@ export default function DashboardHome() {
             {/* Quick Actions */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Link to="/dashboard/upload">
-                    <Card className="bg-card hover:bg-accent/50 transition-colors cursor-pointer h-full">
+                    <Card className="bg-card hover:bg-sidebar-accent/50 transition-colors cursor-pointer h-full">
                         <CardHeader>
                             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                                 <Upload className="h-5 w-5 text-primary" />
@@ -142,7 +143,7 @@ export default function DashboardHome() {
                 </Link>
 
                 <Link to="/dashboard/datasets">
-                    <Card className="bg-card hover:bg-accent/50 transition-colors cursor-pointer h-full">
+                    <Card className="bg-card hover:bg-sidebar-accent/50 transition-colors cursor-pointer h-full">
                         <CardHeader>
                             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
                                 <Database className="h-5 w-5 text-success" />
@@ -158,7 +159,7 @@ export default function DashboardHome() {
                 </Link>
 
                 <Link to="/dashboard/visualizations">
-                    <Card className="bg-card hover:bg-accent/50 transition-colors cursor-pointer h-full">
+                    <Card className="bg-card hover:bg-sidebar-accent/50 transition-colors cursor-pointer h-full">
                         <CardHeader>
                             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-3/10">
                                 <BarChart3 className="h-5 w-5 text-chart-3" />

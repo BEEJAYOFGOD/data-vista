@@ -9,6 +9,8 @@ import ProtectedRoute from "./components/dashboard/ProtectedRoute";
 import DashboardHome from "./pages/Dashboard/Overview";
 import UploadPage from "./pages/Dashboard/Upload";
 import VisualizationsPage from "./pages/Dashboard/Visualizations";
+import DatasetsPage from "./pages/Dashboard/Datasets";
+import SettingsPage from "./pages/Dashboard/Settings";
 
 function App() {
     const { theme } = useTheme();
@@ -41,6 +43,8 @@ function App() {
                         path="visualizations"
                         element={<VisualizationsPage />}
                     />
+                    <Route path="datasets" element={<DatasetsPage />} />
+                    <Route path="settings" element={<SettingsPage />} />
                     {/* <Route path="/signup" element={<SignupPage />}></Route> */}
                 </Route>
             </Routes>

@@ -1,4 +1,3 @@
-import type React from "react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Header } from "@/components/dashboard/header";
 import { MobileSidebar } from "@/components/dashboard/MobileSidebar";

@@ -1,16 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { Dataset } from "@/types/Dataset";
 
-export interface Dataset {
-    id: string;
-    name: string;
-    data: Record<string, unknown>[];
-    columns: string[];
-    rowCount: number;
-    fileSize: number;
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 interface AppState {
     datasets: Dataset[];

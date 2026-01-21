@@ -14,7 +14,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
                 color="purple"
                 text="Loading your data..."
             />
-        ); // Or your loading component
+        );
     }
 
     return user ? children : <Navigate to="/" replace />;
