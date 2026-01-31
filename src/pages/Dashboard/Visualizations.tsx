@@ -78,6 +78,7 @@ export default function VisualizationsPage() {
                         <SelectTrigger className="w-[200px] bg-background">
                             <SelectValue placeholder="Select dataset" />
                         </SelectTrigger>
+
                         <SelectContent>
                             {datasets.map((dataset) => (
                                 <SelectItem key={dataset.id} value={dataset.id}>

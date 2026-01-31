@@ -16,6 +16,7 @@ import { toast } from "sonner";
 const MAX_STORAGE_MB = 100;
 
 export default function DashboardHome() {
+
     const { datasets, addDataset } = useAppStore();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -37,6 +38,7 @@ export default function DashboardHome() {
     const stats = useMemo(() => {
         const totalRows = datasets.reduce((acc, d) => acc + d.rowCount, 0);
         const totalBytes = datasets.reduce((acc, d) => acc + d.fileSize, 0);
+
         const totalMB = Math.round((totalBytes / (1024 * 1024)) * 100) / 100;
 
         // Count recent uploads (last 7 days)

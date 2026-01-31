@@ -35,8 +35,7 @@ import {
     Legend,
 } from "recharts";
 import { Download, ImageIcon } from "lucide-react";
-import type { Dataset } from "@/lib/store";
-
+import type { Dataset } from "@/types/Dataset";
 type ChartType = "bar" | "line" | "pie";
 
 interface ChartContainerProps {
@@ -55,15 +54,20 @@ export function ChartVisualization({ dataset }: ChartContainerProps) {
     const chartRef = useRef<HTMLDivElement>(null);
     const [chartType, setChartType] = useState<ChartType>("bar");
 
+
     const numericColumns = useMemo(() => {
         if (dataset.data.length === 0) return [];
+
         return dataset.columns.filter((col) => {
             const sample = dataset.data.find(
                 (row) => row[col] !== null && row[col] !== undefined
             );
+
             return sample && typeof sample[col] === "number";
         });
+
     }, [dataset]);
+
 
     const [xAxis, setXAxis] = useState<string>(() => dataset.columns[0] || "");
     const [yAxis, setYAxis] = useState<string>(() => numericColumns[0] || "");
@@ -75,6 +79,7 @@ export function ChartVisualization({ dataset }: ChartContainerProps) {
         if (!yAxis && numericColumns.length > 0) {
             setYAxis(numericColumns[0]);
         }
+
     }, [dataset, numericColumns, xAxis, yAxis]);
 
     // Aggregate data for chart
@@ -101,7 +106,8 @@ export function ChartVisualization({ dataset }: ChartContainerProps) {
                 name,
                 value: Math.round((sum / count) * 100) / 100,
             }))
-            .slice(0, 20); // Limit to 20 items for readability
+        // / Limit to 20 items for readability
+
     }, [dataset.data, xAxis, yAxis]);
 
     const handleExportPNG = async () => {
@@ -109,6 +115,7 @@ export function ChartVisualization({ dataset }: ChartContainerProps) {
 
         try {
             const html2canvas = (await import("html2canvas")).default;
+
             const canvas = await html2canvas(chartRef.current, {
                 backgroundColor: "#1e293b",
             });
@@ -144,6 +151,7 @@ export function ChartVisualization({ dataset }: ChartContainerProps) {
                 color: CHART_COLORS[0],
             },
         }),
+
         [yAxis]
     );
 
@@ -346,6 +354,7 @@ export function ChartVisualization({ dataset }: ChartContainerProps) {
                                 <SelectTrigger className="bg-background">
                                     <SelectValue placeholder="Select column" />
                                 </SelectTrigger>
+
                                 <SelectContent>
                                     {dataset.columns.map((col) => (
                                         <SelectItem key={col} value={col}>
@@ -353,6 +362,7 @@ export function ChartVisualization({ dataset }: ChartContainerProps) {
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
+
                             </Select>
                         </div>
 
@@ -362,6 +372,7 @@ export function ChartVisualization({ dataset }: ChartContainerProps) {
                                 <SelectTrigger className="bg-background">
                                     <SelectValue placeholder="Select column" />
                                 </SelectTrigger>
+
                                 <SelectContent>
                                     {numericColumns.length === 0 ? (
                                         <SelectItem value="" disabled>

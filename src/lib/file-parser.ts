@@ -1,79 +1,99 @@
+
+import Papa from "papaparse";
+
 export interface ParsedData {
     columns: string[];
     data: Record<string, unknown>[];
     rowCount: number;
 }
 
+// export async function parseCSV(file: File): Promise<ParsedData> {
+//     return new Promise((resolve, reject) => {
+//         const reader = new FileReader();
+
+//         reader.onload = (event) => {
+//             try {
+//                 const text = event.target?.result as string;
+//                 const lines = text.split("\n").filter((line) => line.trim());
+
+//                 if (lines.length === 0) {
+//                     throw new Error("File is empty");
+//                 }
+
+//                 // Parse header
+//                 const columns = lines[0]
+//                     .split(",")
+//                     .map((col) => col.trim().replace(/^"|"$/g, ""));
+
+//                 // Parse data rows
+//                 const data: Record<string, unknown>[] = [];
+//                 for (let i = 1; i < lines.length; i++) {
+//                     const values = parseCSVLine(lines[i]);
+//                     if (values.length === columns.length) {
+//                         const row: Record<string, unknown> = {};
+//                         columns.forEach((col, index) => {
+//                             const value = values[index];
+//                             // Try to parse numbers
+//                             const num = Number(value);
+//                             row[col] = isNaN(num) || value === "" ? value : num;
+//                         });
+//                         data.push(row);
+//                     }
+//                 }
+
+//                 resolve({
+//                     columns,
+//                     data,
+//                     rowCount: data.length,
+//                 });
+//             } catch (error) {
+//                 reject(error);
+//             }
+//         };
+
+//          reader.onerror = () => reject(new Error("Failed to read file"));
+//         reader.readAsText(file);
+//     });
+
+//     // // Papa.parse(file, {
+//     //     complete: function (results) {
+//     //         console.log(results);
+//     //     }
+
+//     })
+// }
+
 export async function parseCSV(file: File): Promise<ParsedData> {
     return new Promise((resolve, reject) => {
-        const reader = new FileReader();
+        Papa.parse(file, {
+            header: true,
+            dynamicTyping: true,
+            complete: function (results) {
 
-        reader.onload = (event) => {
-            try {
-                const text = event.target?.result as string;
-                const lines = text.split("\n").filter((line) => line.trim());
-
-                if (lines.length === 0) {
-                    throw new Error("File is empty");
+                if (results.data.length === 0) {
+                    reject(new Error("File is empty"));
+                    return;
                 }
 
-                // Parse header
-                const columns = lines[0]
-                    .split(",")
-                    .map((col) => col.trim().replace(/^"|"$/g, ""));
+                console.log(results);
 
-                // Parse data rows
-                const data: Record<string, unknown>[] = [];
-                for (let i = 1; i < lines.length; i++) {
-                    const values = parseCSVLine(lines[i]);
-                    if (values.length === columns.length) {
-                        const row: Record<string, unknown> = {};
-                        columns.forEach((col, index) => {
-                            const value = values[index];
-                            // Try to parse numbers
-                            const num = Number(value);
-                            row[col] = isNaN(num) || value === "" ? value : num;
-                        });
-                        data.push(row);
-                    }
-                }
+
+                console.log(results.meta.fields, "columns");
 
                 resolve({
-                    columns,
-                    data,
-                    rowCount: data.length,
+                    columns: results.meta.fields || [],
+                    data: results.data,
+                    rowCount: results.data.length,
                 });
-            } catch (error) {
-                reject(error);
-            }
-        };
-
-        reader.onerror = () => reject(new Error("Failed to read file"));
-        reader.readAsText(file);
+            },
+            error: function (error) {
+                reject(new Error(error.message));
+            },
+        });
     });
 }
 
-function parseCSVLine(line: string): string[] {
-    const result: string[] = [];
-    let current = "";
-    let inQuotes = false;
 
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === "," && !inQuotes) {
-            result.push(current.trim());
-            current = "";
-        } else {
-            current += char;
-        }
-    }
-
-    result.push(current.trim());
-    return result;
-}
 
 export async function parseJSON(file: File): Promise<ParsedData> {
     return new Promise((resolve, reject) => {
@@ -138,6 +158,7 @@ export async function parseFile(file: File): Promise<ParsedData> {
 
 export function formatFileSize(bytes: number): string {
     if (bytes === 0) return "0 Bytes";
+
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
