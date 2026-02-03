@@ -6,7 +6,7 @@ import { LoadingOverlay } from "@/components/ui/LoadingSpinner";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<AuthContextType["user"]>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {

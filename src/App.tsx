@@ -11,6 +11,7 @@ import UploadPage from "./pages/Dashboard/Upload";
 import VisualizationsPage from "./pages/Dashboard/Visualizations";
 import DatasetsPage from "./pages/Dashboard/Datasets";
 import SettingsPage from "./pages/Dashboard/Settings";
+import TestPage from "./pages/Test";
 
 function App() {
     const { theme } = useTheme();
@@ -45,8 +46,11 @@ function App() {
                     />
                     <Route path="datasets" element={<DatasetsPage />} />
                     <Route path="settings" element={<SettingsPage />} />
+
                     {/* <Route path="/signup" element={<SignupPage />}></Route> */}
                 </Route>
+
+                <Route path="test" element={<TestPage />} />
             </Routes>
         </>
     );

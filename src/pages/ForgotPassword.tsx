@@ -1,9 +1,7 @@
-"use client";
-
 import type React from "react";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -66,7 +64,7 @@ export function ForgotPasswordForm() {
                                 <strong>{email}</strong>
                             </p>
                         </div>
-                        <Link href="/login">
+                        <Link to="/login">
                             <Button
                                 variant="outline"
                                 className="mt-4 bg-transparent"
@@ -126,7 +124,7 @@ export function ForgotPasswordForm() {
                         )}
                         Send reset link
                     </Button>
-                    <Link href="/login" className="w-full">
+                    <Link to="/login" className="w-full">
                         <Button variant="ghost" className="w-full">
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to login

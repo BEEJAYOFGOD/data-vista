@@ -7,61 +7,7 @@ export interface ParsedData {
     rowCount: number;
 }
 
-// export async function parseCSV(file: File): Promise<ParsedData> {
-//     return new Promise((resolve, reject) => {
-//         const reader = new FileReader();
 
-//         reader.onload = (event) => {
-//             try {
-//                 const text = event.target?.result as string;
-//                 const lines = text.split("\n").filter((line) => line.trim());
-
-//                 if (lines.length === 0) {
-//                     throw new Error("File is empty");
-//                 }
-
-//                 // Parse header
-//                 const columns = lines[0]
-//                     .split(",")
-//                     .map((col) => col.trim().replace(/^"|"$/g, ""));
-
-//                 // Parse data rows
-//                 const data: Record<string, unknown>[] = [];
-//                 for (let i = 1; i < lines.length; i++) {
-//                     const values = parseCSVLine(lines[i]);
-//                     if (values.length === columns.length) {
-//                         const row: Record<string, unknown> = {};
-//                         columns.forEach((col, index) => {
-//                             const value = values[index];
-//                             // Try to parse numbers
-//                             const num = Number(value);
-//                             row[col] = isNaN(num) || value === "" ? value : num;
-//                         });
-//                         data.push(row);
-//                     }
-//                 }
-
-//                 resolve({
-//                     columns,
-//                     data,
-//                     rowCount: data.length,
-//                 });
-//             } catch (error) {
-//                 reject(error);
-//             }
-//         };
-
-//          reader.onerror = () => reject(new Error("Failed to read file"));
-//         reader.readAsText(file);
-//     });
-
-//     // // Papa.parse(file, {
-//     //     complete: function (results) {
-//     //         console.log(results);
-//     //     }
-
-//     })
-// }
 
 export async function parseCSV(file: File): Promise<ParsedData> {
     return new Promise((resolve, reject) => {
@@ -82,7 +28,7 @@ export async function parseCSV(file: File): Promise<ParsedData> {
 
                 resolve({
                     columns: results.meta.fields || [],
-                    data: results.data,
+                    data: results.data as Record<string, unknown>[],
                     rowCount: results.data.length,
                 });
             },

@@ -1,4 +1,4 @@
-import type { Dataset } from "./store";
+import type { Dataset } from "@/types/Dataset";
 
 // Generate realistic sales data
 function generateSalesData(rows: number) {
